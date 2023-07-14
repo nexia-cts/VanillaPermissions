@@ -1,11 +1,12 @@
 package me.drex.vanillapermissions.event;
 
+import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.CommandNode;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.server.commands.ExecuteCommand;
 
 public interface AddConditionalCallback {
 
@@ -16,7 +17,7 @@ public interface AddConditionalCallback {
     });
 
     /**
-     * Called from {@link net.minecraft.server.commands.ExecuteCommand#addConditionals(CommandNode, LiteralArgumentBuilder, boolean, CommandBuildContext)}
+     * Called from {@link net.minecraft.server.commands.ExecuteCommand#addConditional(CommandNode, ArgumentBuilder, boolean, ExecuteCommand.CommandPredicate)}
      * to register permission conditional
      *
      * @param node

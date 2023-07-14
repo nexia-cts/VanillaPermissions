@@ -6,46 +6,29 @@ import me.drex.vanillapermissions.event.CommandCallback;
 import me.drex.vanillapermissions.mixin.CommandNodeAccessor;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.fabricmc.api.DedicatedServerModInitializer;
+import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.util.TriState;
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.ModContainer;
-import net.fabricmc.loader.api.VersionParsingException;
-import net.fabricmc.loader.api.metadata.version.VersionPredicate;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Optional;
 import java.util.function.Predicate;
 
 import static me.drex.vanillapermissions.Constants.build;
 
 public class VanillaPermissionsMod implements DedicatedServerModInitializer {
-
-    public static final String MOD_ID = "vanilla-permissions";
     private static final Logger LOGGER = LogManager.getLogger();
-    public static final ResourceLocation MODIFY_VANILLA_PERMISSIONS_PHASE = new ResourceLocation(MOD_ID, "modify_vanilla_permissions");
 
     @Override
     public void onInitializeServer() {
+        //CommandRegistrationCallback.EVENT.addPhaseOrdering(VanillaPermissionsMod.MODIFY_VANILLA_PERMISSIONS_PHASE, new ResourceLocation("fabric", "default"));
+        CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> CommandCallback.EVENT.invoker().register(dispatcher));
         CommandCallback.EVENT.register(dispatcher -> {
             for (CommandNode<CommandSourceStack> node : dispatcher.getRoot().getChildren()) {
                 alterCommandChildNode(dispatcher, node, node.getRequirement());
             }
             LOGGER.info("Loaded Fabric Permissions");
         });
-    }
-
-    public static boolean isMinecraftVersionPresent(String versionPredicate) {
-        try {
-            Optional<ModContainer> optional = FabricLoader.getInstance().getModContainer("minecraft");
-            ModContainer minecraft = optional.orElseThrow();
-            return VersionPredicate.parse(versionPredicate).test(minecraft.getMetadata().getVersion());
-        } catch (VersionParsingException e) {
-            LOGGER.error("An error occurred while parsing minecraft version predicate", e);
-            return false;
-        }
     }
 
     @SuppressWarnings("unchecked")
